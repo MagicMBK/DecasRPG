@@ -63,6 +63,12 @@ function createRoom(roomName) {
     return roomId;
 }
 
+function deleteRoom(roomId) {
+    const confirmDelete = confirm("Are you sure you want to delete this room?");
+    if (!confirmDelete) return;
+    socket.emit('deleteRoom', roomId);
+}
+
 function spawnEnemies(roomId, count) {
     const room = rooms[roomId];
     if (!room) return;
@@ -319,6 +325,12 @@ io.on('connection', socket => {
         io.emit('roomsList', Object.values(rooms).map(r => ({ id: r.id, name: r.name, players: Object.keys(r.players).length })));
     });
 
+    socket.on('deleteRoom', (roomId) => {
+        if (rooms[roomId]) {
+            delete rooms[roomId]; // Remove room
+            io.emit('roomsList', Object.values(rooms)); // Update all clients
+        }
+    });
     socket.on('getRooms', () => {
         socket.emit('roomsList', Object.values(rooms).map(r => ({ id: r.id, name: r.name, players: Object.keys(r.players).length })));
     });

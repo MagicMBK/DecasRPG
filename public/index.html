@@ -285,19 +285,30 @@
         socket.on('connect', () => playerId = socket.id);
 
         socket.on('roomsList', (rooms) => {
-            const roomList = document.getElementById('room-list');
-            if (rooms.length === 0) { 
-                roomList.innerHTML = '<p style="color: #c9a961; text-align: center;">No rooms available. Create one!</p>'; 
-                return; 
-            }
-            roomList.innerHTML = '';
-            rooms.forEach(room => {
-                const roomDiv = document.createElement('div');
-                roomDiv.className = 'room-item';
-                roomDiv.innerHTML = `<div class="room-info"><div class="room-name">🏰 ${room.name}</div><div class="room-players">👥 ${room.players} / 8 players</div></div><button class="join-btn" onclick="joinRoom('${room.id}')" ${room.players >= 8 ? 'disabled' : ''}>${room.players >= 8 ? 'Full' : 'Join'}</button>`;
-                roomList.appendChild(roomDiv);
-            });
-        });
+    const roomList = document.getElementById('room-list');
+    if (rooms.length === 0) { 
+        roomList.innerHTML = '<p style="color: #c9a961; text-align: center;">No rooms available. Create one!</p>'; 
+        return; 
+    }
+    roomList.innerHTML = '';
+    rooms.forEach(room => {
+        const roomDiv = document.createElement('div');
+        roomDiv.className = 'room-item';
+        roomDiv.innerHTML = `
+            <div class="room-info">
+                <div class="room-name">🏰 ${room.name}</div>
+                <div class="room-players">👥 ${room.players} / 8 players</div>
+            </div>
+            <div>
+                <button class="join-btn" onclick="joinRoom('${room.id}')" ${room.players >= 8 ? 'disabled' : ''}>
+                    ${room.players >= 8 ? 'Full' : 'Join'}
+                </button>
+                <button class="join-btn" onclick="deleteRoom('${room.id}')">Delete</button>
+            </div>
+        `;
+        roomList.appendChild(roomDiv);
+    });
+    });
 
         socket.on('roomJoined', (room) => { 
             currentRoom = room; 
